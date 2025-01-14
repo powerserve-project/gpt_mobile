@@ -85,6 +85,22 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun updateMultiRound(apiType: ApiType, enable: Boolean) {
+        val index = _platformState.value.indexOfFirst { it.name == apiType }
+
+        if (index >= 0) {
+            _platformState.update {
+                it.mapIndexed { i, p ->
+                    if (index == i) {
+                        p.copy(multiRound = enable)
+                    } else {
+                        p
+                    }
+                }
+            }
+        }
+    }
+
     fun updateModel(apiType: ApiType, model: String) {
         val index = _platformState.value.indexOfFirst { it.name == apiType }
 
@@ -160,6 +176,8 @@ class SettingViewModel @Inject constructor(
 
     fun openApiTokenDialog() = _dialogState.update { it.copy(isApiTokenDialogOpen = true) }
 
+    fun openApiMultiRoundDialog() = _dialogState.update { it.copy(isApiMultiRoundDialogOpen = true) }
+
     fun openApiModelDialog() = _dialogState.update { it.copy(isApiModelDialogOpen = true) }
 
     fun openTemperatureDialog() = _dialogState.update { it.copy(isTemperatureDialogOpen = true) }
@@ -173,6 +191,8 @@ class SettingViewModel @Inject constructor(
     fun closeApiUrlDialog() = _dialogState.update { it.copy(isApiUrlDialogOpen = false) }
 
     fun closeApiTokenDialog() = _dialogState.update { it.copy(isApiTokenDialogOpen = false) }
+
+    fun closeApiMultiRoundDialog() = _dialogState.update { it.copy(isApiMultiRoundDialogOpen = false ) }
 
     fun closeApiModelDialog() = _dialogState.update { it.copy(isApiModelDialogOpen = false) }
 
@@ -192,6 +212,7 @@ class SettingViewModel @Inject constructor(
     data class DialogState(
         val isThemeDialogOpen: Boolean = false,
         val isApiUrlDialogOpen: Boolean = false,
+        val isApiMultiRoundDialogOpen: Boolean = false,
         val isApiTokenDialogOpen: Boolean = false,
         val isApiModelDialogOpen: Boolean = false,
         val isTemperatureDialogOpen: Boolean = false,

@@ -64,10 +64,14 @@
     <string name="platform_setting_description">API密钥,模型,系统提示词</string>
     <string name="enable_api">启用API</string>
     <string name="api_key">API密钥</string>
+    <string name="multi_round">启用多轮对话支持</string>
+    <string name="enable">启用</string>
+    <string name="disable">禁用</string>
     <string name="api_model">选择模型</string>
     <string name="dynamic_theme">动态取色</string>
     <string name="dark_mode">暗黑模式</string>
     <string name="key_icon">密钥的图标</string>
+    <string name="multi_round_icon">多轮对话的图标</string>
     <string name="model_icon">模型的图标</string>
     <string name="send">发送</string>
     <string name="copy_text">复制</string>
@@ -76,6 +80,7 @@
     <string name="some_platforms_disabled">一些API已被禁用</string>
     <string name="token_not_set">没有设置Token</string>
     <string name="token_set">Token设置为 %s*****</string>
+    <string name="multi_round_support">目前 PowerServe 处于测试阶段，多轮对话可能出现输出到达上限，请新开会话以重置缓存</string>
     <string name="close">关闭</string>
     <string name="delete">删除</string>
     <string name="chats_selected">选择 %d 个</string>
@@ -131,6 +136,7 @@
     <string name="scroll_to_bottom_icon">滚动到底部的图标</string>
     <string name="llama_3_2_description">Meta最新的轻量开源模型</string>
     <string name="llama_3_1_description">Meta最先进的大型开源模型</string>
+    <string name="qwen_2_description">阿里巴巴Qwen团队的开源模型</string>
     <string name="gemma2_description">Google的轻量模型</string>
     <string name="select_groq_model">选择Groq会话的模型</string>
     <string name="select_groq_model_description">请选择Groq会话的模型，如果您想使用模型不在列表中，请查看Grop的API文档来知道可用的模型</string>
@@ -152,4 +158,13 @@
     <string name="token_input_warning">注意：OpenAI和Anthropic使用预付费计费，因此在使用之前，您必须确保账户有余额。否则将返回错误。</string>
     <string name="edit_question">编辑用户信息</string>
     <string name="user_message">用户消息</string>
+    <string name="export_chat">导出聊天记录</string>
+    <string name="powerserve">PowerServe</string>
+    <string name="powerserve_description">使用您自己的模型</string>
+    <string name="powerserve_setting">PowerServe</string>
+    <string name="select_powerserve_model">选择PowerServe会话的模型</string>
+    <string name="select_powerserve_model_description">由于PowerServe的模型型号过多，您需要自定义模型。确保API支持您自定义的模型，否则会发生错误</string>
+    <string name="powerserve_api_key">PowerServe API密钥</string>
+    <string name="powerserve_storage_permission">无法获取外部存储访问权限，请在设置中打开以进行模型数据的访问和写入</string>
+    <string name="smallthinker_description">上海交通大学 IPADS 实验室开发的 o1-like 端侧开源模型</string>
 </resources>

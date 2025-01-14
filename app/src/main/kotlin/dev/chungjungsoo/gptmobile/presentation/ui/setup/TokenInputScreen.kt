@@ -73,7 +73,7 @@ fun TokenInputScreen(
             )
             Spacer(modifier = Modifier.weight(1f))
             PrimaryLongButton(
-                enabled = platformState.filter { it.selected && it.name != ApiType.OLLAMA }.all { platform -> platform.token != null },
+                enabled = platformState.filter { it.selected && it.name != ApiType.OLLAMA && it.name != ApiType.POWER_SERVE }.all { platform -> platform.token != null },
                 onClick = {
                     val nextStep = setupViewModel.getNextSetupRoute(currentRoute)
                     onNavigate(nextStep)
@@ -125,8 +125,8 @@ fun TokenInput(
 
     Column(modifier = modifier) {
         // Ollama doesn't currently support api keys
-        platforms.filter { it.selected && it.name != ApiType.OLLAMA }.forEachIndexed { i, platform ->
-            val isLast = platforms.filter { it.selected && it.name != ApiType.OLLAMA }.size - 1 == i
+        platforms.filter { it.selected && it.name != ApiType.OLLAMA && it.name != ApiType.POWER_SERVE }.forEachIndexed { i, platform ->
+            val isLast = platforms.filter { it.selected && it.name != ApiType.OLLAMA && it.name != ApiType.POWER_SERVE }.size - 1 == i
             TokenInputField(
                 value = platform.token ?: "",
                 onValueChange = { onChangeEvent(platform, it) },

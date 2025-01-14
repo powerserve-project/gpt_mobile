@@ -7,6 +7,7 @@ data class Platform(
     val name: ApiType,
     val selected: Boolean = false,
     val enabled: Boolean = false,
+    val multiRound: Boolean = false,
     val apiUrl: String = getDefaultAPIUrl(name),
     val token: String? = null,
     val model: String? = null,

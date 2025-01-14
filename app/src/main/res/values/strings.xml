@@ -80,10 +80,14 @@
     <string name="platform_setting_description">API Key, Model, System Prompt</string>
     <string name="enable_api">Enable API</string>
     <string name="api_key">API Key</string>
+    <string name="multi_round">Multi-round Chat</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
     <string name="api_model">API Model</string>
     <string name="dynamic_theme">Dynamic Theme</string>
     <string name="dark_mode">Dark Mode</string>
     <string name="key_icon">Key Icon</string>
+    <string name="multi_round_icon">Multi Round Icon</string>
     <string name="model_icon">Model Icon</string>
     <string name="send">Send</string>
     <string name="copy_text">Copy Text</string>
@@ -95,6 +99,7 @@
     <string name="google_brand_text" translatable="false">Powered by Gemini</string>
     <string name="token_not_set">Token not set</string>
     <string name="token_set">Token is set as %s*****</string>
+    <string name="multi_round_support">The PowerServe is now in test, multi-round chat may incur cache overflow. Please open a new chat for cache reset.</string>
     <string name="close">Close</string>
     <string name="delete">Delete</string>
     <string name="chats_selected">%d selected</string>
@@ -159,6 +164,13 @@
     <string name="bug_report_description">Something isn\'t working correctly?</string>
     <string name="bug_report_icon">Bug Report Icon</string>
     <string name="scroll_to_bottom_icon">Scroll to bottom icon</string>
+    <string name="llama_3_1_8b_instruct" translatable="false">Llama 3.1 8B Instruct</string>
+    <string name="llama_3_2_1b_instruct" translatable="false">Llama 3.2 1B Instruct</string>
+    <string name="smallthinker_3b" translatable="false">SmallThinker 3B</string>
+    <string name="smallthinker_3b_spec" translatable="false">SmallThinker 3B(Speculative)</string>
+    <string name="qwen_2_7b" translatable="false">Qwen2 7B Instruct</string>
+    <string name="qwen_2_1_5b" translatable="false">Qwen2 1.5B Instruct</string>
+    <string name="qwen_2_0_5b" translatable="false">Qwen2 0.5B Instruct</string>
     <string name="llama_3_2_3b" translatable="false">Llama 3.2 3B (Preview) 8k</string>
     <string name="llama_3_2_1b" translatable="false">Llama 3.2 1B (Preview) 8k</string>
     <string name="llama_3_1_70b_versatile" translatable="false">Llama 3.1 70B Versatile 128k</string>
@@ -166,6 +178,8 @@
     <string name="gemma_2_9b" translatable="false">Gemma 2 9B 8k</string>
     <string name="llama_3_2_description">Latest Lightweight Open Source language model from Meta.</string>
     <string name="llama_3_1_description">State-of-the-art multilingual open source large language model from Meta.</string>
+    <string name="smallthinker_description">State-of-the-art open source o1-like large language model from SJTU IPADS Lab.</string>
+    <string name="qwen_2_description">Open source large language model from Alibaba</string>
     <string name="gemma2_description">Small Language Model released by Google.</string>
     <string name="select_groq_model">Select Groq Chat Model</string>
     <string name="select_groq_model_description">Please select the Groq chat model. If you want models that are not on the list, check out Groq API documentation website and see what\'s available.</string>
@@ -191,4 +205,13 @@
     <string name="edit_question">Edit User Message</string>
     <string name="user_message">User Message</string>
     <string name="export_chat">Export Chat</string>
+    <string name="powerserve">PowerServe</string>
+    <string name="powerserve_description">Use your own model.</string>
+    <string name="powerserve_brand_text" translatable="false">Powered by PowerServe</string>
+    <string name="powerserve_setting">PowerServe Settings</string>
+    <string name="select_powerserve_model">Select PowerServe Model</string>
+    <string name="select_powerserve_model_description">Please select the PowerServe model. Since there is so many models and tags that are supported, you can customize the model value. Make sure that the endpoint actually supports the model and get it running. Otherwise, it will not generate a response.</string>
+    <string name="powerserve_api_key">PowerServe API Key</string>
+    <string name="powerserve_api_help" translatable="false">https://github.com/powerserve-project/PowerServe</string>
+    <string name="powerserve_storage_permission">Failed to get external storage permission, please open it in settings to read/write model files</string>
 </resources>

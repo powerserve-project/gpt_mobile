@@ -125,6 +125,7 @@ fun ChatScreen(
     val googleLoadingState by chatViewModel.googleLoadingState.collectAsStateWithLifecycle()
     val groqLoadingState by chatViewModel.groqLoadingState.collectAsStateWithLifecycle()
     val ollamaLoadingState by chatViewModel.ollamaLoadingState.collectAsStateWithLifecycle()
+    val powerServeLoadingState by chatViewModel.powerServeLoadingState.collectAsStateWithLifecycle()
     val geminiNanoLoadingState by chatViewModel.geminiNanoLoadingState.collectAsStateWithLifecycle()
     val userMessage by chatViewModel.userMessage.collectAsStateWithLifecycle()
     val openAIMessage by chatViewModel.openAIMessage.collectAsStateWithLifecycle()
@@ -132,6 +133,7 @@ fun ChatScreen(
     val googleMessage by chatViewModel.googleMessage.collectAsStateWithLifecycle()
     val groqMessage by chatViewModel.groqMessage.collectAsStateWithLifecycle()
     val ollamaMessage by chatViewModel.ollamaMessage.collectAsStateWithLifecycle()
+    val powerServeMessage by chatViewModel.powerServeMessage.collectAsStateWithLifecycle()
     val geminiNano by chatViewModel.geminiNanoMessage.collectAsStateWithLifecycle()
     val canUseChat = (chatViewModel.enabledPlatformsInChat.toSet() - appEnabledPlatforms.toSet()).isEmpty()
     val groupedMessages = remember(messages) { groupMessages(messages) }
@@ -279,6 +281,7 @@ fun ChatScreen(
                                 ApiType.GOOGLE -> googleMessage
                                 ApiType.GROQ -> groqMessage
                                 ApiType.OLLAMA -> ollamaMessage
+                                ApiType.POWER_SERVE -> powerServeMessage
                             }
 
                             val loadingState = when (apiType) {
@@ -287,6 +290,7 @@ fun ChatScreen(
                                 ApiType.GOOGLE -> googleLoadingState
                                 ApiType.GROQ -> groqLoadingState
                                 ApiType.OLLAMA -> ollamaLoadingState
+                                ApiType.POWER_SERVE -> powerServeLoadingState
                             }
 
                             OpponentChatBubble(

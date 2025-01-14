@@ -1,3 +1,6 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -23,6 +26,31 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        buildConfigField(
+            "String", "HEXAGON_VERSION", "\"8G4\""
+        )
+
+        buildConfigField(
+            "String", "QNN_SDK_VERSION", "\"29\""
+        )
+
+        externalNativeBuild {
+            cmake {
+                arguments += listOf(
+                    "-DPOWERSERVE_WITH_QNN=ON",
+                    "-DPOWERSERVE_ENABLE_LTO=ON",
+                    "-DCMAKE_BUILD_TYPE=Release",
+                    "-DPOWERSERVE_EXCEPTION_ABORT=ON",
+                    "-DPOWERSERVE_ANDROID_LOG=ON",
+                    "-DPOWERSERVE_SERVER_MULTIMODEL=OFF"
+                )
+            }
+        }
+        ndk {
+            // noinspection ChromeOsAbiSupport
+            abiFilters += listOf("arm64-v8a")
         }
     }
 
@@ -51,10 +79,35 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+
+    applicationVariants.all {
+        outputs.all {
+            if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
+                val config          = project.android.defaultConfig
+                val versionName     = config.versionName
+                val formatter       = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
+                val createTime      = LocalDateTime.now().format(formatter)
+                val qnnSDKVersion   = config.buildConfigFields["QNN_SDK_VERSION"]
+                val hexagonVersion  = config.buildConfigFields["HEXAGON_VERSION"]
+                this.outputFileName = "${rootProject.name}_${this.name}_${versionName}_${createTime}_QNN${qnnSDKVersion}_${hexagonVersion}.apk"
+            }
         }
     }
 }

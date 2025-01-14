@@ -156,6 +156,19 @@ fun NavGraphBuilder.setupNavigation(
                 onBackAction = { navController.navigateUp() }
             )
         }
+        composable(route = Route.POWER_SERVE_MODEL_SELECT) {
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry(Route.SETUP_ROUTE)
+            }
+            val setupViewModel: SetupViewModel = hiltViewModel(parentEntry)
+            SelectModelScreen(
+                setupViewModel = setupViewModel,
+                currentRoute = Route.POWER_SERVE_MODEL_SELECT,
+                platformType = ApiType.POWER_SERVE,
+                onNavigate = { route -> navController.navigate(route) },
+                onBackAction = { navController.navigateUp() }
+            )
+        }
         composable(route = Route.SETUP_COMPLETE) {
             val parentEntry = remember(it) {
                 navController.getBackStackEntry(Route.SETUP_ROUTE)
@@ -229,6 +242,7 @@ fun NavGraphBuilder.settingNavigation(navController: NavHostController) {
                         ApiType.GOOGLE -> navController.navigate(Route.GOOGLE_SETTINGS)
                         ApiType.GROQ -> navController.navigate(Route.GROQ_SETTINGS)
                         ApiType.OLLAMA -> navController.navigate(Route.OLLAMA_SETTINGS)
+                        ApiType.POWER_SERVE -> navController.navigate(Route.POWER_SERVE_SETTINGS)
                     }
                 },
                 onNavigateToAboutPage = { navController.navigate(Route.ABOUT_PAGE) }
@@ -282,6 +296,16 @@ fun NavGraphBuilder.settingNavigation(navController: NavHostController) {
             PlatformSettingScreen(
                 settingViewModel = settingViewModel,
                 apiType = ApiType.OLLAMA
+            ) { navController.navigateUp() }
+        }
+        composable(Route.POWER_SERVE_SETTINGS) {
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry(Route.SETTING_ROUTE)
+            }
+            val settingViewModel: SettingViewModel = hiltViewModel(parentEntry)
+            PlatformSettingScreen(
+                settingViewModel = settingViewModel,
+                apiType = ApiType.POWER_SERVE
             ) { navController.navigateUp() }
         }
         composable(Route.ABOUT_PAGE) {

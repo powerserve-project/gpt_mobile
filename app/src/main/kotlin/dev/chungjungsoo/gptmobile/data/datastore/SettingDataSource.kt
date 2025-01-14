@@ -9,6 +9,7 @@ interface SettingDataSource {
     suspend fun updateThemeMode(themeMode: ThemeMode)
     suspend fun updateStatus(apiType: ApiType, status: Boolean)
     suspend fun updateAPIUrl(apiType: ApiType, url: String)
+    suspend fun updateMultiRound(apiType: ApiType, enable: Boolean)
     suspend fun updateToken(apiType: ApiType, token: String)
     suspend fun updateModel(apiType: ApiType, model: String)
     suspend fun updateTemperature(apiType: ApiType, temperature: Float)
@@ -18,6 +19,7 @@ interface SettingDataSource {
     suspend fun getThemeMode(): ThemeMode?
     suspend fun getStatus(apiType: ApiType): Boolean?
     suspend fun getAPIUrl(apiType: ApiType): String?
+    suspend fun getMultiRound(apiType: ApiType): Boolean?
     suspend fun getToken(apiType: ApiType): String?
     suspend fun getModel(apiType: ApiType): String?
     suspend fun getTemperature(apiType: ApiType): Float?

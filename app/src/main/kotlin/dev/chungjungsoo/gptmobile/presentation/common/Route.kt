@@ -13,6 +13,7 @@ object Route {
     const val GROQ_MODEL_SELECT = "groq_model_select"
     const val OLLAMA_MODEL_SELECT = "ollama_model_select"
     const val OLLAMA_API_ADDRESS = "ollama_api_address"
+    const val POWER_SERVE_MODEL_SELECT = "powerserve_model_select"
     const val SETUP_COMPLETE = "setup_complete"
 
     const val CHAT_LIST = "chat_list"
@@ -25,6 +26,7 @@ object Route {
     const val GOOGLE_SETTINGS = "google_settings"
     const val GROQ_SETTINGS = "groq_settings"
     const val OLLAMA_SETTINGS = "ollama_settings"
+    const val POWER_SERVE_SETTINGS = "power_serve_settings"
     const val ABOUT_PAGE = "about"
     const val LICENSE = "license"
 }

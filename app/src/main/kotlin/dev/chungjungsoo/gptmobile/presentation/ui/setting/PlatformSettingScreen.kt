@@ -82,6 +82,7 @@ fun PlatformSettingScreen(
             val platform = platformState.firstOrNull { it.name == apiType }
             val url = platform?.apiUrl ?: ModelConstants.getDefaultAPIUrl(apiType)
             val enabled = platform?.enabled == true
+            val multiRound = platform?.multiRound ?: false
             val model = platform?.model
             val token = platform?.token
             val temperature = platform?.temperature ?: 1F
@@ -92,6 +93,7 @@ fun PlatformSettingScreen(
                 ApiType.GOOGLE -> ModelConstants.DEFAULT_PROMPT
                 ApiType.GROQ -> ModelConstants.DEFAULT_PROMPT
                 ApiType.OLLAMA -> ModelConstants.DEFAULT_PROMPT
+                ApiType.POWER_SERVE -> ModelConstants.DEFAULT_PROMPT
             }
 
             PreferenceSwitchWithContainer(
@@ -125,6 +127,21 @@ fun PlatformSettingScreen(
                     Icon(
                         ImageVector.vectorResource(id = R.drawable.ic_key),
                         contentDescription = stringResource(R.string.key_icon)
+                    )
+                }
+            )
+            SettingItem(
+                modifier = Modifier.height(64.dp),
+                title = stringResource(R.string.multi_round),
+                description = if (multiRound) { stringResource(R.string.enable) } else { stringResource(R.string.disable) },
+                enabled = enabled,
+                onItemClick = settingViewModel::openApiMultiRoundDialog,
+                showTrailingIcon = false,
+                showLeadingIcon = true,
+                leadingIcon = {
+                    Icon(
+                        ImageVector.vectorResource(id = R.drawable.ic_recycle),
+                        contentDescription = stringResource(R.string.multi_round_icon)
                     )
                 }
             )
@@ -191,6 +208,7 @@ fun PlatformSettingScreen(
 
             APIUrlDialog(dialogState, apiType, url, settingViewModel)
             APIKeyDialog(dialogState, apiType, settingViewModel)
+            APIMultiRoundDialog(dialogState, apiType, multiRound, settingViewModel)
             ModelDialog(dialogState, apiType, model, settingViewModel)
             TemperatureDialog(dialogState, apiType, temperature, settingViewModel)
             TopPDialog(dialogState, apiType, topP, settingViewModel)

@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.protobuf.Api
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.chungjungsoo.gptmobile.R
@@ -35,6 +36,7 @@ import dev.chungjungsoo.gptmobile.data.ModelConstants.anthropicModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.googleModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.groqModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.openaiModels
+import dev.chungjungsoo.gptmobile.data.ModelConstants.powerServeModels
 import dev.chungjungsoo.gptmobile.data.dto.APIModel
 import dev.chungjungsoo.gptmobile.data.model.ApiType
 import dev.chungjungsoo.gptmobile.presentation.common.PrimaryLongButton
@@ -43,6 +45,7 @@ import dev.chungjungsoo.gptmobile.util.generateAnthropicModelList
 import dev.chungjungsoo.gptmobile.util.generateGoogleModelList
 import dev.chungjungsoo.gptmobile.util.generateGroqModelList
 import dev.chungjungsoo.gptmobile.util.generateOpenAIModelList
+import dev.chungjungsoo.gptmobile.util.generatePowerServeModelList
 import dev.chungjungsoo.gptmobile.util.getAPIModelSelectDescription
 import dev.chungjungsoo.gptmobile.util.getAPIModelSelectTitle
 
@@ -63,6 +66,7 @@ fun SelectModelScreen(
         ApiType.GOOGLE -> generateGoogleModelList(models = googleModels)
         ApiType.GROQ -> generateGroqModelList(models = groqModels)
         ApiType.OLLAMA -> listOf()
+        ApiType.POWER_SERVE -> generatePowerServeModelList(models = powerServeModels)
     }
     val defaultModel = remember {
         derivedStateOf {
@@ -74,6 +78,7 @@ fun SelectModelScreen(
                     ApiType.GOOGLE -> 1
                     ApiType.GROQ -> 0
                     ApiType.OLLAMA -> 0
+                    ApiType.POWER_SERVE -> 0
                 }
             )
         }

@@ -1,5 +1,6 @@
 package dev.chungjungsoo.gptmobile.presentation.ui.setup
 
+import androidx.datastore.preferences.protobuf.Api
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,6 +9,7 @@ import dev.chungjungsoo.gptmobile.data.ModelConstants.googleModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.groqModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.ollamaModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.openaiModels
+import dev.chungjungsoo.gptmobile.data.ModelConstants.powerServeModels
 import dev.chungjungsoo.gptmobile.data.dto.Platform
 import dev.chungjungsoo.gptmobile.data.model.ApiType
 import dev.chungjungsoo.gptmobile.data.repository.SettingRepository
@@ -28,7 +30,8 @@ class SetupViewModel @Inject constructor(private val settingRepository: SettingR
             Platform(ApiType.ANTHROPIC),
             Platform(ApiType.GOOGLE),
             Platform(ApiType.GROQ),
-            Platform(ApiType.OLLAMA)
+            Platform(ApiType.OLLAMA),
+            Platform(ApiType.POWER_SERVE)
         )
     )
     val platformState: StateFlow<List<Platform>> = _platformState.asStateFlow()
@@ -119,6 +122,7 @@ class SetupViewModel @Inject constructor(private val settingRepository: SettingR
             Route.GROQ_MODEL_SELECT,
             Route.OLLAMA_MODEL_SELECT,
             Route.OLLAMA_API_ADDRESS,
+            Route.POWER_SERVE_MODEL_SELECT,
             Route.SETUP_COMPLETE
         )
         val commonSteps = mutableSetOf(Route.SELECT_PLATFORM, Route.TOKEN_INPUT, Route.SETUP_COMPLETE)
@@ -128,7 +132,8 @@ class SetupViewModel @Inject constructor(private val settingRepository: SettingR
             Route.GOOGLE_MODEL_SELECT to ApiType.GOOGLE,
             Route.GROQ_MODEL_SELECT to ApiType.GROQ,
             Route.OLLAMA_MODEL_SELECT to ApiType.OLLAMA,
-            Route.OLLAMA_API_ADDRESS to ApiType.OLLAMA
+            Route.OLLAMA_API_ADDRESS to ApiType.OLLAMA,
+            Route.POWER_SERVE_MODEL_SELECT to ApiType.POWER_SERVE
         )
 
         val currentIndex = steps.indexOfFirst { it == currentRoute }
@@ -159,6 +164,7 @@ class SetupViewModel @Inject constructor(private val settingRepository: SettingR
             ApiType.GOOGLE -> googleModels
             ApiType.GROQ -> groqModels
             ApiType.OLLAMA -> ollamaModels
+            ApiType.POWER_SERVE -> powerServeModels
         }.toList()
 
         if (modelList.size <= defaultModelIndex) {

@@ -21,6 +21,11 @@ class SettingRepositoryImpl @Inject constructor(
             ApiType.GOOGLE -> settingDataSource.getAPIUrl(apiType) ?: ModelConstants.GOOGLE_API_URL
             ApiType.GROQ -> settingDataSource.getAPIUrl(apiType) ?: ModelConstants.GROQ_API_URL
             ApiType.OLLAMA -> settingDataSource.getAPIUrl(apiType) ?: ""
+            ApiType.POWER_SERVE -> settingDataSource.getAPIUrl(apiType) ?: ""
+        }
+        val multiRound = when (apiType) {
+            ApiType.POWER_SERVE -> settingDataSource.getMultiRound(apiType) ?: false
+            else -> true
         }
         val token = settingDataSource.getToken(apiType)
         val model = settingDataSource.getModel(apiType)
@@ -32,11 +37,13 @@ class SettingRepositoryImpl @Inject constructor(
             ApiType.GOOGLE -> settingDataSource.getSystemPrompt(ApiType.GOOGLE) ?: ModelConstants.DEFAULT_PROMPT
             ApiType.GROQ -> settingDataSource.getSystemPrompt(ApiType.GROQ) ?: ModelConstants.DEFAULT_PROMPT
             ApiType.OLLAMA -> settingDataSource.getSystemPrompt(ApiType.OLLAMA) ?: ModelConstants.DEFAULT_PROMPT
+            ApiType.POWER_SERVE -> settingDataSource.getSystemPrompt(ApiType.POWER_SERVE) ?: ModelConstants.DEFAULT_PROMPT
         }
 
         Platform(
             name = apiType,
             enabled = status == true,
+            multiRound = multiRound,
             apiUrl = apiUrl,
             token = token,
             model = model,
@@ -55,7 +62,7 @@ class SettingRepositoryImpl @Inject constructor(
         platforms.forEach { platform ->
             settingDataSource.updateStatus(platform.name, platform.enabled)
             settingDataSource.updateAPIUrl(platform.name, platform.apiUrl)
-
+            settingDataSource.updateMultiRound(platform.name, platform.multiRound)
             platform.token?.let { settingDataSource.updateToken(platform.name, it) }
             platform.model?.let { settingDataSource.updateModel(platform.name, it) }
             platform.temperature?.let { settingDataSource.updateTemperature(platform.name, it) }

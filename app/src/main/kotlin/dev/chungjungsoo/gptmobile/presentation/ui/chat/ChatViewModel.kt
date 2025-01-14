@@ -1,6 +1,7 @@
 package dev.chungjungsoo.gptmobile.presentation.ui.chat
 
 import android.util.Log
+import androidx.datastore.preferences.protobuf.Api
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -78,6 +79,9 @@ class ChatViewModel @Inject constructor(
     private val _ollamaLoadingState = MutableStateFlow<LoadingState>(LoadingState.Idle)
     val ollamaLoadingState = _ollamaLoadingState.asStateFlow()
 
+    private val _powerServeLoadingState = MutableStateFlow<LoadingState>(LoadingState.Idle)
+    val powerServeLoadingState = _powerServeLoadingState.asStateFlow()
+
     private val _geminiNanoLoadingState = MutableStateFlow<LoadingState>(LoadingState.Idle)
     val geminiNanoLoadingState = _geminiNanoLoadingState.asStateFlow()
 
@@ -110,6 +114,9 @@ class ChatViewModel @Inject constructor(
     private val _ollamaMessage = MutableStateFlow(Message(chatId = chatRoomId, content = "", platformType = ApiType.OLLAMA))
     val ollamaMessage = _ollamaMessage.asStateFlow()
 
+    private val _powerServeMessage = MutableStateFlow(Message(chatId = chatRoomId, content = "", platformType = ApiType.POWER_SERVE))
+    val powerServeMessage = _powerServeMessage.asStateFlow()
+
     private val _geminiNanoMessage = MutableStateFlow(Message(chatId = chatRoomId, content = "", platformType = null))
     val geminiNanoMessage = _geminiNanoMessage.asStateFlow()
 
@@ -119,6 +126,7 @@ class ChatViewModel @Inject constructor(
     private val googleFlow = MutableSharedFlow<ApiState>()
     private val groqFlow = MutableSharedFlow<ApiState>()
     private val ollamaFlow = MutableSharedFlow<ApiState>()
+    private val powerServeFlow = MutableSharedFlow<ApiState>()
     private val geminiNanoFlow = MutableSharedFlow<ApiState>()
 
     init {
@@ -215,6 +223,11 @@ class ChatViewModel @Inject constructor(
                 completeOllamaChat()
             }
 
+            ApiType.POWER_SERVE -> {
+                _powerServeMessage.update { it.copy(id = message.id, content = "", createdAt = currentTimeStamp) }
+                completePowerServeChat()
+            }
+
             else -> {}
         }
     }
@@ -270,6 +283,7 @@ class ChatViewModel @Inject constructor(
         _googleMessage.update { it.copy(id = 0, content = "") }
         _groqMessage.update { it.copy(id = 0, content = "") }
         _ollamaMessage.update { it.copy(id = 0, content = "") }
+        _powerServeMessage.update { it.copy(id = 0, content = "") }
     }
 
     private fun completeChat() {
@@ -294,6 +308,10 @@ class ChatViewModel @Inject constructor(
 
         if (ApiType.OLLAMA in enabledPlatforms) {
             completeOllamaChat()
+        }
+
+        if (ApiType.POWER_SERVE in enabledPlatforms) {
+            completePowerServeChat()
         }
     }
 
@@ -322,6 +340,13 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             val chatFlow = chatRepository.completeOllamaChat(question = _userMessage.value, history = _messages.value)
             chatFlow.collect { chunk -> ollamaFlow.emit(chunk) }
+        }
+    }
+
+    private fun completePowerServeChat() {
+        viewModelScope.launch {
+            val chatFlow = chatRepository.completePowerServeChat(question = _userMessage.value, history = _messages.value)
+            chatFlow.collect { chunk -> powerServeFlow.emit(chunk) }
         }
     }
 
@@ -404,6 +429,13 @@ class ChatViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            powerServeFlow.handleStates(
+                messageFlow = _powerServeMessage,
+                onLoadingComplete = { updateLoadingState(ApiType.POWER_SERVE, LoadingState.Idle) }
+            )
+        }
+
+        viewModelScope.launch {
             geminiNanoFlow.handleStates(
                 messageFlow = _geminiNanoMessage,
                 onLoadingComplete = { _geminiNanoLoadingState.update { LoadingState.Idle } }
@@ -434,6 +466,7 @@ class ChatViewModel @Inject constructor(
             ApiType.GOOGLE -> _googleLoadingState
             ApiType.GROQ -> _groqLoadingState
             ApiType.OLLAMA -> _ollamaLoadingState
+            ApiType.POWER_SERVE -> _powerServeLoadingState
         }
 
         if (retryingState == LoadingState.Loading) return
@@ -445,6 +478,7 @@ class ChatViewModel @Inject constructor(
             ApiType.GOOGLE -> _googleMessage.update { message }
             ApiType.GROQ -> _groqMessage.update { message }
             ApiType.OLLAMA -> _ollamaMessage.update { message }
+            ApiType.POWER_SERVE -> _powerServeMessage.update { message }
         }
     }
 
@@ -471,6 +505,10 @@ class ChatViewModel @Inject constructor(
         if (ApiType.OLLAMA in enabledPlatforms) {
             addMessage(_ollamaMessage.value)
         }
+
+        if (ApiType.POWER_SERVE in enabledPlatforms) {
+            addMessage(_powerServeMessage.value)
+        }
     }
 
     private fun updateLoadingState(apiType: ApiType, loadingState: LoadingState) {
@@ -480,6 +518,7 @@ class ChatViewModel @Inject constructor(
             ApiType.GOOGLE -> _googleLoadingState.update { loadingState }
             ApiType.GROQ -> _groqLoadingState.update { loadingState }
             ApiType.OLLAMA -> _ollamaLoadingState.update { loadingState }
+            ApiType.POWER_SERVE -> _powerServeLoadingState.update { loadingState }
         }
 
         var result = true
@@ -490,6 +529,7 @@ class ChatViewModel @Inject constructor(
                 ApiType.GOOGLE -> _googleLoadingState
                 ApiType.GROQ -> _groqLoadingState
                 ApiType.OLLAMA -> _ollamaLoadingState
+                ApiType.POWER_SERVE -> _powerServeLoadingState
             }
 
             result = result && (state.value is LoadingState.Idle)

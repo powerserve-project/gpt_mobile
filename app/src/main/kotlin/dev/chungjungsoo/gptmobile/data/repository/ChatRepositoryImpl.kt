@@ -1,6 +1,7 @@
 package dev.chungjungsoo.gptmobile.data.repository
 
 import android.content.Context
+import android.util.Log
 import com.aallam.openai.api.chat.ChatCompletionChunk
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
@@ -31,6 +32,7 @@ import dev.chungjungsoo.gptmobile.data.dto.anthropic.response.ErrorResponseChunk
 import dev.chungjungsoo.gptmobile.data.dto.anthropic.response.MessageResponseChunk
 import dev.chungjungsoo.gptmobile.data.model.ApiType
 import dev.chungjungsoo.gptmobile.data.network.AnthropicAPI
+import dev.chungjungsoo.gptmobile.data.server.PowerServeServer
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -51,6 +53,8 @@ class ChatRepositoryImpl @Inject constructor(
     private lateinit var ollama: OpenAI
     private lateinit var groq: OpenAI
 
+    private val powerServe = PowerServeServer(appContext)
+
     override suspend fun completeOpenAIChat(question: Message, history: List<Message>): Flow<ApiState> {
         val platform = checkNotNull(settingRepository.fetchPlatforms().firstOrNull { it.name == ApiType.OPENAI })
         openAI = OpenAI(platform.token ?: "", host = OpenAIHost(baseUrl = platform.apiUrl))
@@ -67,7 +71,9 @@ class ChatRepositoryImpl @Inject constructor(
         )
 
         return openAI.chatCompletions(chatCompletionRequest)
-            .map<ChatCompletionChunk, ApiState> { chunk -> ApiState.Success(chunk.choices.getOrNull(0)?.delta?.content ?: "") }
+            .map<ChatCompletionChunk, ApiState> { chunk ->
+                ApiState.Success(chunk.choices.getOrNull(0)?.delta?.content ?: "")
+            }
             .catch { throwable -> emit(ApiState.Error(throwable.message ?: "Unknown error")) }
             .onStart { emit(ApiState.Loading) }
             .onCompletion { emit(ApiState.Done) }
@@ -171,6 +177,40 @@ class ChatRepositoryImpl @Inject constructor(
             .catch { throwable -> emit(ApiState.Error(throwable.message ?: "Unknown error")) }
             .onStart { emit(ApiState.Loading) }
             .onCompletion { emit(ApiState.Done) }
+    }
+
+    override suspend fun completePowerServeChat(question: Message, history: List<Message>): Flow<ApiState> {
+        val platform = checkNotNull(settingRepository.fetchPlatforms().firstOrNull { it.name == ApiType.POWER_SERVE })
+
+        var messageList = listOf(question)
+        // TODO: enable multi-round communication when the underlying cache is ready
+        if (platform.multiRound) {
+            messageList = history + messageList
+        }
+
+        val generatedMessages = messageToOpenAICompatibleMessage(ApiType.POWER_SERVE, messageList)
+        val generatedMessageWithPrompt = listOf(
+            ChatMessage(role = ChatRole.System, content = platform.systemPrompt ?: ModelConstants.DEFAULT_PROMPT)
+        ) + generatedMessages
+        val chatCompletionRequest = ChatCompletionRequest(
+            model = ModelId(platform.model ?: ""),
+            messages = generatedMessageWithPrompt,
+            temperature = platform.temperature?.toDouble(),
+            topP = platform.topP?.toDouble(),
+            maxTokens = 2048
+        )
+
+        return powerServe.chatCompletions(chatCompletionRequest)
+            .map<ChatCompletionChunk, ApiState> { chunk ->
+                ApiState.Success(chunk.choices.getOrNull(0)?.delta?.content ?: "")
+            }
+            .catch { throwable -> emit(ApiState.Error(throwable.message ?: "Unknown error")) }
+            .onStart { emit(ApiState.Loading) }
+            .onCompletion {
+                Log.d("PowerServe", "Complete chat")
+                emit(ApiState.Done)
+            }
+
     }
 
     override suspend fun fetchChatList(): List<ChatRoom> = chatRoomDao.getChatRooms()

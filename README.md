@@ -2,37 +2,81 @@
 
 <img width="200" height="200" style="display: block;" src="./images/logo.png">
 
-# GPT Mobile
-
-### Chat Assistant for Android that supports chatting with multiple models at once.
-
-<p>
-  <a href="https://mailchi.mp/kotlinweekly/kotlin-weekly-431"><img alt="Kotlin Weekly" src="https://img.shields.io/badge/Kotlin%20Weekly-%23431-blue"/></a>
-  <img alt="Android" src="https://img.shields.io/badge/Platform-Android-green.svg"/>
-  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Taewan-P/gpt_mobile/release-build.yml">
-  <a href="https://hosted.weblate.org/engage/gptmobile/"><img src="https://hosted.weblate.org/widget/gptmobile/gptmobile/svg-badge.svg" alt="Translation status" /></a>
-  <a href="https://github.com/Taewan-P/gpt_mobile/releases/"><img alt="GitHub Releases Total Downloads" src="https://img.shields.io/github/downloads/Taewan-P/gpt_mobile/total?label=Downloads&logo=github"/></a>
-  <a href="https://github.com/Taewan-P/gpt_mobile/releases/latest/"><img alt="GitHub Releases (latest by date)" src="https://img.shields.io/github/v/release/Taewan-P/gpt_mobile?color=black&label=Stable&logo=github"/></a>
-</p>
-
-
 </div>
 
+# GPT Mobile + PowerServe
 
-## Screenshots
+This subject is forked from open-source project [GPT Mobile](https://github.com/Taewan-P/gpt_mobile). The PowerServe is integrated into the app as one of the inference backend.
 
-<div align="center">
+## Build
 
-<img style="display: block;" src="./images/screenshots.webp">
+### Initialization 
+This project is integrated with PowerServe as a submodule and build it as a JNI static library. 
+Before building, please execute the following command(s) to **init submodules**:
+```shell
+git submodule update --init --recursive
+```
 
-</div>
+### Prepare Libraries
+This step is for QNN support. If you are to compile a executable for only-CPU platform, please skip this step.
 
-## Demos
+Then copy QNN library into the directory `app/src/main/jniLibs/<arch>`. For latest phone "One plus 13" with architecture *arm64-v8a*, libraries should be copied into `app/src/main/jniLibs/arm64-v8a`, just like:
+```
+--- app
+  --- src
+    --- main
+      --- jniLibs
+        --- arm64-v8a
+          --- libQnnHtp.so
+          --- libQnnHtpV79.so
+          --- libQnnHtpV79Skel.so
+          --- libQnnHtpV79Stub.so
+          --- libQnnSystem.so
+```
+where the 64-bit QNN libraries("libQnnHtp.so", "libQnnSystem.so", "libQnnHtpV79Stub.so") come from **"\$QNN_SDK_ROOT/lib/aarch64-android"** 
+while the 32-bit QNN library("libQnnHtpV79.so", "libQnnHtpV79Skel.so") comes from **"\$QNN_SDK_ROOT/lib/hexagon-v79/unsigned"**
+
+If you are using 8Gen3 or other qualcomm processors, the libraries placement is similar while the version should change to the proper one according to the [Documentation](https://docs.qualcomm.com/bundle/publicresource/topics/80-63442-50/overview.html#supported-snapdragon-devices):
+
+| Processor  | Hexagon Arch |
+|------------|--------------|
+| 8Gen Elite | V79          |
+| 8Gen 3     | V75          |
 
 
-| <video src="https://github.com/Taewan-P/gpt_mobile/assets/27392567/96229e6d-6795-48b4-a915-aca915bd2527"/> | <video src="https://github.com/Taewan-P/gpt_mobile/assets/27392567/1cc13413-7320-4f6f-ace9-de76de58adcc"/> | <video src="https://github.com/Taewan-P/gpt_mobile/assets/27392567/546e2694-953d-4d67-937f-a29fba81046f"/> |
-|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+### Compile and Execute
 
+> Do set the environment variable **QNN_SDK_ROOT** as the path to QNN SDK before compile this project when compiling an executable for NPU.
+> 
+> Do change the 
+
+Open this project with Android Studio, download necessary dependencies automatically and build up the app.
+
+## Usage
+
+> Note: For reading and downloading models, the program acquire **MANAGE_EXTERNAL_STORAGE** privilege. PowerServe backend does not acquire network connection (except for model downloading), it will not collect any user data as well.
+
+The program will search the model directory(/storage/emulated/0/Download/powerserve) in external storage for models. 
+You can just select expected model for automatic downloading or download it from [huggingface](https://huggingface.co/PowerServe) to the model directory(/storage/emulated/0/Download/powerserve) directly.
+
+Most of the time, you can find the Download directory(/storage/emulated/0/Download) in the file manager directly. For those who want to download and try a model manually, 
+just create the directory `powerserve` under the Download directory and download models into it. The construction should be 
+```shell
+└── Download
+    └── powerserve
+        ├── SmallThinker-3B-PowerServe-QNN29-8Gen4
+        │   ├── model.json
+        │   ├── vocab.gguf
+        │   ├── ggml
+        │   │   └── weights.gguf
+        │   └── qnn
+        │       ├── lmhead.bin
+        │       ├── kv
+        │       │   └── ... 
+        │       └── ...
+        └──SmallThinker-0.5B-PowerServe-QNN29-8Gen4
+            └── ...
+```
 
 ## Features
 
@@ -44,6 +88,7 @@
     - Google Gemini
     - Groq
     - Ollama
+    - PowerServe
   - Can customize temperature, top p (Nucleus sampling), and system prompt
   - Custom API URLs, Custom Models are also supported
 - Local chat history
@@ -54,45 +99,14 @@
 - Per app language setting for Android 13+
 - 100% Kotlin, Jetpack Compose, Single Activity, [Modern App Architecture](https://developer.android.com/topic/architecture#modern-app-architecture) in Android developers documentation
 
-
-## To be supported
-
-- More platforms
-- Image, file support for multimodal models
-
-If you have any feature requests, please open an issue.
-
-
-## Downloads
-
-You can download the app from the following sites:
-
-[<img height="80" alt="Get it on F-Droid" src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"/>](https://f-droid.org/packages/dev.chungjungsoo.gptmobile)
-[<img height="80" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/>](https://play.google.com/store/apps/details?id=dev.chungjungsoo.gptmobile&utm_source=github&utm_campaign=gh-readme)
-[<img height="80" alt='Get it on GitHub' src='https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png'/>](https://github.com/Taewan-P/gpt_mobile/releases)
-
-Cross platform updates are supported. However, GitHub Releases will be the fastest track among the platforms since there is no verification/auditing process. (Probably 1 week difference?)
-
-
-
-## Contributions
-
-Contributions are welcome! The contribution guideline is not yet available, but I will be happy to review it! 💯
-
-For translations, we are using [Hosted Weblate](https://hosted.weblate.org/engage/gptmobile/). If you want your language supported, help us translate the app!
-
-<a href="https://hosted.weblate.org/engage/gptmobile/">
-  <img src="https://hosted.weblate.org/widget/gptmobile/gptmobile/multi-auto.svg" alt="Translation status" />
-</a>
-
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Taewan-P/gpt_mobile&type=Timeline)](https://star-history.com/#Taewan-P/gpt_mobile&Timeline)
-
-
 ## License
 
 See [LICENSE](./LICENSE) for details.
 
 [F-Droid Icon License](https://gitlab.com/fdroid/artwork/-/blob/master/fdroid-logo-2015/README.md)
+
+## Known Issue
+
+1. Because this app use PowerServe as local backend, which is in test mode currently, if some operation causes crash of the backend, the App crash as well.
+2. PowerServe haven't implemented ring-round KVCache. When running multi-round chat or use o1-like model, it may incurs KVCache overflow.
+3. Touching multiple model may fails to create QNN shared buffer if setting -DPOWERSERVE_SERVER_MULTIMODEL=ON in the build.gradle.kts.

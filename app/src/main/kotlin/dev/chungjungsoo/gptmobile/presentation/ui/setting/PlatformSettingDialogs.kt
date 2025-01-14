@@ -34,6 +34,7 @@ import dev.chungjungsoo.gptmobile.data.ModelConstants.googleModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.groqModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.ollamaModels
 import dev.chungjungsoo.gptmobile.data.ModelConstants.openaiModels
+import dev.chungjungsoo.gptmobile.data.ModelConstants.powerServeModels
 import dev.chungjungsoo.gptmobile.data.model.ApiType
 import dev.chungjungsoo.gptmobile.presentation.common.RadioItem
 import dev.chungjungsoo.gptmobile.presentation.common.TokenInputField
@@ -41,6 +42,7 @@ import dev.chungjungsoo.gptmobile.util.generateAnthropicModelList
 import dev.chungjungsoo.gptmobile.util.generateGoogleModelList
 import dev.chungjungsoo.gptmobile.util.generateGroqModelList
 import dev.chungjungsoo.gptmobile.util.generateOpenAIModelList
+import dev.chungjungsoo.gptmobile.util.generatePowerServeModelList
 import dev.chungjungsoo.gptmobile.util.getPlatformAPILabelResources
 import dev.chungjungsoo.gptmobile.util.getPlatformHelpLinkResources
 import dev.chungjungsoo.gptmobile.util.isValidUrl
@@ -86,6 +88,25 @@ fun APIKeyDialog(
             settingViewModel.updateToken(apiType, apiToken)
             settingViewModel.savePlatformSettings()
             settingViewModel.closeApiTokenDialog()
+        }
+    }
+}
+
+@Composable
+fun APIMultiRoundDialog(
+    dialogState: SettingViewModel.DialogState,
+    apiType: ApiType,
+    multiRound: Boolean,
+    settingViewModel: SettingViewModel
+) {
+    if (dialogState.isApiMultiRoundDialogOpen) {
+        APIMultiRoundDialog(
+            initialValue = multiRound,
+            onDismissRequest = settingViewModel::closeApiMultiRoundDialog,
+        ) { apiMultiRound ->
+            settingViewModel.updateMultiRound(apiType, apiMultiRound)
+            settingViewModel.savePlatformSettings()
+            settingViewModel.closeApiMultiRoundDialog()
         }
     }
 }
@@ -279,6 +300,63 @@ private fun APIKeyDialog(
 }
 
 @Composable
+private fun APIMultiRoundDialog(
+    initialValue: Boolean,
+    onDismissRequest: () -> Unit,
+    onConfirmRequest: (enable: Boolean) -> Unit
+) {
+    val configuration = LocalConfiguration.current
+    var enableMultiRound by remember { mutableStateOf(initialValue) }
+
+    AlertDialog(
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier
+            .widthIn(max = configuration.screenWidthDp.dp - 40.dp)
+            .heightIn(max = configuration.screenHeightDp.dp - 80.dp),
+        title = { Text(text = stringResource(R.string.multi_round) ) },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                RadioItem(
+                    value = "Enable",
+                    selected = enableMultiRound,
+                    title = stringResource(R.string.enable),
+                    description = stringResource(R.string.multi_round_support),
+                    onSelected = {
+                        enableMultiRound = true
+                    }
+                )
+                RadioItem(
+                    value = "Disable",
+                    selected = !enableMultiRound,
+                    title = stringResource(R.string.disable),
+                    description = stringResource(R.string.disable),
+                    onSelected = {
+                        enableMultiRound = false
+                    }
+                )
+            }
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmRequest(enableMultiRound)
+                }
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest
+            ) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
+}
+
+@Composable
 private fun ModelDialog(
     apiType: ApiType,
     initModel: String,
@@ -291,6 +369,7 @@ private fun ModelDialog(
         ApiType.GOOGLE -> googleModels
         ApiType.GROQ -> groqModels
         ApiType.OLLAMA -> ollamaModels
+        ApiType.POWER_SERVE -> powerServeModels
     }
     val availableModels = when (apiType) {
         ApiType.OPENAI -> generateOpenAIModelList(models = modelList)
@@ -298,6 +377,7 @@ private fun ModelDialog(
         ApiType.GOOGLE -> generateGoogleModelList(models = modelList)
         ApiType.GROQ -> generateGroqModelList(models = modelList)
         ApiType.OLLAMA -> listOf()
+        ApiType.POWER_SERVE -> generatePowerServeModelList(models = modelList)
     }
     val configuration = LocalConfiguration.current
     var model by remember { mutableStateOf(initModel) }
